@@ -76,9 +76,10 @@ app.use((req, res, next) => {
 
 const userRouter = require('./routes/userRouter');
 const tourRouter = require('./routes/tourRouter');
+const reviewRouter = require('./routes/reviewRouter'); // Import the review router
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
-
+app.use('/api/v1/reviews',reviewRouter); // Use the review router for review-related routes
 
 app.all('*', (req, res, next) => {
   const error = new AppError(

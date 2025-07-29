@@ -1,7 +1,9 @@
-const Tour = require('../models/toursmodel');
+// const Tour = require('../models/toursmodel');
+const Tour = require('../models/toursModel');
 const APIFeatures = require('../utils/apiFeatures');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/indexError');
+
 const mongoose = require('mongoose');
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5'; // Limit to 5 tours
@@ -106,7 +108,7 @@ exports.getTours = catchAsync(async (req, res, next) => {
   //  if (!mongoose.Types.ObjectId.isValid(id)) {
   //     return next(new AppError('Invalid ID format', 400));
   // }
-  const tour = await Tour.findById(req.params.id)
+  const tour = await Tour.findById(id).populate('reviews'); // Populate the reviews field
   if (!tour) {
     return next(new AppError('No tour found with that ID', 404)); // If no tour is found, return a 404 error
   }

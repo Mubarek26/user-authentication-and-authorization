@@ -1,10 +1,15 @@
 const express = require('express');
 const tourControllers = require('./../controllers/tourControllers');
 const router = express.Router();
-const { protect,restrictTo } = require('../controllers/authController');
+const authController= require('../controllers/authController');
+const { protect, restrictTo } = require('../controllers/authController');
+const reviewRouter = require('./reviewRouter'); // Import review router
+
 const { getAllTours, getTours, createTours, updateTours, deleteTours,aliasTopTours,getTourStats,getMonthlyPlan } = tourControllers;
 // router.param('id', tourControllers.checkID);
 // router.use(tourControllers.checkBody); // Middleware to check body for POST requests
+
+router.use('/:tourId/reviews', reviewRouter); // Use the review router for nested routes
 router
     .route('/top-5-cheap').get(aliasTopTours, getAllTours); // Middleware to alias top tours
 router
@@ -21,5 +26,10 @@ router
     .route('/:id')
     .get(getTours) 
     .patch(updateTours)
-    .delete(protect,restrictTo('admin','lead-guide'),deleteTours);
-   module.exports = router;
+    .delete(protect, restrictTo('admin', 'lead-guide'), deleteTours);
+    
+// Nested route for reviews
+// router
+//     .route('/:tourId/reviews')
+//     .post(authController.protect, authController.restrictTo('user'), reviewControllers.createReview); // Create a new review for a specific tour
+   module.exports = router;  

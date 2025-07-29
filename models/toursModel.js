@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
+const Review = require('./reviewModel'); // Import Review model for virtual population
 const express = require('express');
 const slugify = require('slugify'); // Import slugify for creating slugs
 const user = require('./userModel'); // Import User model for guide references
+
 const tourSchema = new mongoose.Schema({ 
     name: {
         type: String,
@@ -26,10 +28,6 @@ const tourSchema = new mongoose.Schema({
         type: String,
         // required: [true, 'A tour must have a difficulty'],
        
-    },
-    ratingAverage: {
-        type: Number,
-        default: 4.5
     },
     ratingAverage: {
         type: Number,
@@ -117,6 +115,9 @@ const tourSchema = new mongoose.Schema({
         ref: 'User',
         required: [true, 'A tour must belong to a user']
     }
+}, {
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 })
 
 
@@ -133,17 +134,29 @@ const tourSchema = new mongoose.Schema({
 //     console.log(doc);
 //     next();
 // })
+
+tourSchema.virtual('reviews', {
+    ref: 'Review',
+    foreignField: 'tour',
+    localField: '_id',
+// Removed erroneous reassignment of tourSchema with incomplete schema definition
+ 
+});
+
 tourSchema.pre(/^find/, function (next) {
     this.populate({
-    path: 'guides',
+        path: 'guides',
+        
     select:'-__v -passwordChangedAt'
     }); // Populate the guides field with user data
+   
     next();
 })
 tourSchema.pre(/^find/, function (next) {
     this.find({ secretTour: { $ne: true } }) // Exclude secret tours from all find queries
     next();
 })
+
 
 
 // tourSchema.pre('save',async function (next) {
