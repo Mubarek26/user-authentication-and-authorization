@@ -3,7 +3,7 @@ const Tour = require('../models/toursModel');
 const APIFeatures = require('../utils/apiFeatures');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/indexError');
-
+const factory = require('./handlerFactory'); // Import the handler factory
 const mongoose = require('mongoose');
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5'; // Limit to 5 tours
@@ -105,9 +105,6 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
 exports.getTours = catchAsync(async (req, res, next) => {
   // console.log(req.params)
   const id = req.params.id;
-  //  if (!mongoose.Types.ObjectId.isValid(id)) {
-  //     return next(new AppError('Invalid ID format', 400));
-  // }
   const tour = await Tour.findById(id).populate('reviews'); // Populate the reviews field
   if (!tour) {
     return next(new AppError('No tour found with that ID', 404)); // If no tour is found, return a 404 error
@@ -120,42 +117,45 @@ exports.getTours = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.createTours = catchAsync(async (req, res, next) => {
-  const newTour = await Tour.create(req.body);
-  console.log('Request body:', req.body); // ✅ Also works
-  res.status(201).json({
-    status: 'success',
-    data: {
-      tour: newTour,
-    },
-  });
-});
+// exports.createTours = catchAsync(async (req, res, next) => {
+//   const newTour = await Tour.create(req.body);
+//   console.log('Request body:', req.body); // ✅ Also works
+//   res.status(201).json({
+//     status: 'success',
+//     data: {
+//       tour: newTour,
+//     },
+//   });
+// });
 
-exports.updateTours = catchAsync(async (req, res, next) => {
-  console.log(req.params);
-  const id = req.params.id;
-  const tour = await Tour.findByIdAndUpdate(id, req.body, {
-    new: true, // Return the updated document
-    runValidators: true, // Validate the update against the schema
-  });
-  if (!tour) {
-    return next(new AppError('No tour found with that ID', 404)); // If no tour is found, return a 404 error
-  }
-});
+// exports.updateTours = catchAsync(async (req, res, next) => {
+//   console.log(req.params);
+//   const id = req.params.id;
+//   const tour = await Tour.findByIdAndUpdate(id, req.body, {
+//     new: true, // Return the updated document
+//     runValidators: true, // Validate the update against the schema
+//   });
+//   if (!tour) {
+//     return next(new AppError('No tour found with that ID', 404)); // If no tour is found, return a 404 error
+//   }
+// });
+exports.createTours = factory.createOne(Tour); // Use the createOne factory function to handle creation
+exports.updateTours = factory.updateOne(Tour); // Use the updateOne factory function to handle updates
+exports.deleteTours = factory.deleteOne(Tour); // Use the deleteOne factory function to handle deletion
 
-exports.deleteTours = catchAsync(async (req, res, next) => {
-  console.log(req.params);
-  const { id } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return next(new AppError('Invalid ID format', 400));
-  }
-  const tour = await Tour.findByIdAndDelete(req.params.id);
-  if (!tour) {
-    return next(new AppError('No tour found with that ID', 404)); // If no tour is found, return a 404 error
-  }
+// exports.deleteTours = catchAsync(async (req, res, next) => {
+//   console.log(req.params);
+//   const { id } = req.params;
+//   if (!mongoose.Types.ObjectId.isValid(id)) {
+//     return next(new AppError('Invalid ID format', 400));
+//   }
+//   const tour = await Tour.findByIdAndDelete(req.params.id);
+//   if (!tour) {
+//     return next(new AppError('No tour found with that ID', 404)); // If no tour is found, return a 404 error
+//   }
 
-  res.status(204).json({
-    status: 'success',
-    data: null,
-  });
-});
+//   res.status(204).json({
+//     status: 'success',
+//     data: null,
+//   });
+// });

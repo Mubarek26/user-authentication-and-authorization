@@ -1,6 +1,7 @@
 const express = require('express');
 const AppError = require('../utils/indexError');
 const catchAsync = require('../utils/catchAsync');
+const factory = require('./handlerFactory'); // Import the handler factory
 const User = require('../models/userModel');
 // const { use } = require('react');
 const router = express.Router();
@@ -57,6 +58,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 });
 
 // 2. delete user
+// exports.deleteMe=factory.deleteOne(User); // Use the deleteOne factory function to delete a user
 exports.deleteMe = catchAsync(async (req, res, next) => {
     await User.findByIdAndUpdate(req.user.id,{active: false});
     res.status(204).json({
@@ -72,16 +74,17 @@ exports.getUser = (req, res) => {
     message: 'User retrieved successfully',
   });
 };
-
-exports.updateUsers = (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    message: 'User updated successfully',
-  });
-};
-exports.deleteUsers = (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    message: 'User deleted successfully',
-  });
-};
+exports.updateUsers = factory.updateOne(User); // Use the updateOne factory function to handle updates
+exports.deleteUsers = factory.deleteOne(User); // Use the deleteOne factory function to handle deletion
+// exports.updateUsers = (req, res) => {
+//   res.status(200).json({
+//     status: 'success',
+//     message: 'User updated successfully',
+//   });
+// };
+// exports.deleteUsers = (req, res) => {
+//   res.status(200).json({
+//     status: 'success',
+//     message: 'User deleted successfully',
+//   });
+// };

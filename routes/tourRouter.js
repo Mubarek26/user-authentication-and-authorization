@@ -26,7 +26,7 @@ router
     .route('/:id')
     .get(getTours) 
     .patch(updateTours)
-    .delete(protect, restrictTo('admin', 'lead-guide'), deleteTours);
+    .delete(protect, restrictTo('admin', 'lead-guide','user'), deleteTours);
     
 // Nested route for reviews
 // router
