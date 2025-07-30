@@ -12,19 +12,9 @@ exports.createUser = (req, res) => {
   // Here you would typically save the user to a database
   res.status(201).json({
     status: 'success',
-    message: 'User created successfully',
+    message: 'This route is not defined,please use /signup instead!',
   });
 };
-exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
-  res.status(200).json({
-    status: 'success',
-    message: 'All users retrieved successfully',
-    data: {
-      users: users,
-    },
-  });
-});
 
 exports.updateMe = catchAsync(async (req, res, next) => {
   // 1. create error if user posts password data
@@ -38,16 +28,16 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   }
   // 2. Filter out unwanted fields names that are not allowed to be updated
   const filteredBody = {};
-  const allowedFields = ['name','email', 'photo','role']; // Add any other fields
+  const allowedFields = ['name', 'email', 'photo', 'role']; // Add any other fields
   Object.keys(req.body).forEach((el) => {
     if (allowedFields.includes(el)) filteredBody[el] = req.body[el];
   });
-    
+
   // 3. update user document
-    const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
-        new: true,       // return the updated document
-        runValidators: true,
-    });
+  const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
+    new: true, // return the updated document
+    runValidators: true,
+  });
 
   res.status(200).json({
     status: 'success',
@@ -57,34 +47,18 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   });
 });
 
-// 2. delete user
-// exports.deleteMe=factory.deleteOne(User); // Use the deleteOne factory function to delete a user
+
 exports.deleteMe = catchAsync(async (req, res, next) => {
-    await User.findByIdAndUpdate(req.user.id,{active: false});
-    res.status(204).json({
-        status: 'success',
-        message: 'User deleted successfully',
-    })
-})
-
-
-exports.getUser = (req, res) => {
-  res.status(200).json({
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+  res.status(204).json({
     status: 'success',
-    message: 'User retrieved successfully',
+    message: 'User deleted successfully',
   });
-};
+});
+
+
+exports.getAllUsers = factory.getAll(User); // Use the getAll factory function to get all users
+exports.getUser = factory.getOne(User); // Use the getOne factory function to get a user
 exports.updateUsers = factory.updateOne(User); // Use the updateOne factory function to handle updates
 exports.deleteUsers = factory.deleteOne(User); // Use the deleteOne factory function to handle deletion
-// exports.updateUsers = (req, res) => {
-//   res.status(200).json({
-//     status: 'success',
-//     message: 'User updated successfully',
-//   });
-// };
-// exports.deleteUsers = (req, res) => {
-//   res.status(200).json({
-//     status: 'success',
-//     message: 'User deleted successfully',
-//   });
-// };
+
