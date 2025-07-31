@@ -16,6 +16,11 @@ exports.createUser = (req, res) => {
   });
 };
 
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user.id; // Set the user ID to the authenticated user's ID
+  next(); // Call the next middleware function
+}
+
 exports.updateMe = catchAsync(async (req, res, next) => {
   // 1. create error if user posts password data
   if (req.body.password || req.body.passwordConfirm) {

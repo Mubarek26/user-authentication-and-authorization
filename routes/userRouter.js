@@ -13,15 +13,22 @@ router
 router
     .route('/login').post(login)
 
-router.route('/forgotPassword').post(authController.protect,authController.forgotPassword);
+router.route('/forgotPassword').post(authController.forgotPassword);
 router.route('/resetPassword/:token').patch(authController.resetPassword);
-router.route('/updatePassword').patch(authController.protect, authController.updatePassword);
-router.route('/updateMe').patch(authController.protect, userControllers.updateMe); // Route to update user profile
-router.route('/deleteMe').delete(authController.protect, userControllers.deleteMe); // Route to delete user profile
+
+router.use(authController.protect); // Protect all routes after this middleware
+
+router.route('/updatePassword').patch( authController.updatePassword);
+router.route('/me').get(userControllers.getMe,userControllers.getUser); // Route to create a new user
+router.route('/updateMe').patch( userControllers.updateMe); // Route to update user profile
+router.route('/deleteMe').delete(userControllers.deleteMe); // Route to delete user profile
+
+// Restrict all routes after this middleware to admin users
+router.use(authController.restrictTo('admin')); // Restrict all routes after this middleware to admin users
 
 router
     .route('/')
-    .get(authController.protect,getAllUsers)
+    .get(getAllUsers)
     .post(createUser);
 
 router.route('/:id')

@@ -16,16 +16,17 @@ router
     .route('/monthly-plan/:year') // Route to get monthly plan for a specific year
     .get(getMonthlyPlan); // Controller to handle monthly plan requests
 
+    router.route('/tours-within/:distance/center/:latlng/unit/:unit',tourControllers.getToursWithin); // Route to get tours within a certain distance from a point
 router
     .route('/') 
     .get(protect,getAllTours)
-    .post(createTours); // Middleware to check body for POST requests
+    .post(authController.protect,authController.restrictTo('admin'), createTours); // Middleware to check body for POST requests
 router
     .route('/tour-stats').get(getTourStats)
 router
     .route('/:id')
     .get(getTour) 
-    .patch(updateTours)
+    .patch(protect, restrictTo('admin', 'lead-guide','user'),updateTours)
     .delete(protect, restrictTo('admin', 'lead-guide','user'), deleteTours);
     
 // Nested route for reviews

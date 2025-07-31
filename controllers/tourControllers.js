@@ -79,7 +79,9 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
     data: plan,
   });
 });
-
+exports.getToursWithin = catchAsync(async (req, res, next) => {
+  const {distance, latlng, unit} = req.params;
+})
 
 exports.getAllTours = factory.getAll(Tour); // Use the getAll factory function to get all tours
 exports.getTour = factory.getOne(Tour, { path: 'reviews' }); // Use the getOne factory function to get a tour with populated reviews
